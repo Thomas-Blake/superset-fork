@@ -35,7 +35,7 @@ from superset.common.db_query_status import QueryStatus
 from superset.models.core import Database  # noqa: F401
 from superset.utils.database import (
     get_example_database,
-)  # noqa: F401
+)
 from superset.utils import core as utils, json
 from superset.models.sql_lab import Query
 
@@ -68,7 +68,7 @@ class TestSqlLabApi(SupersetTestCase):
         assert resp.status_code == 200
         data = json.loads(resp.data.decode("utf-8"))
         result = data.get("result")
-        assert result["active_tab"] is None  # noqa: E711
+        assert result["active_tab"] is None
         assert result["tab_state_ids"] == []
         assert len(result["databases"]) == 0
 
@@ -97,7 +97,7 @@ class TestSqlLabApi(SupersetTestCase):
         assert resp.status_code == 200
         data = json.loads(resp.data.decode("utf-8"))
         result = data.get("result")
-        assert result["active_tab"] is None  # noqa: E711
+        assert result["active_tab"] is None
         assert result["tab_state_ids"] == []
 
     @pytest.mark.usefixtures("load_birth_names_data")
@@ -198,7 +198,7 @@ class TestSqlLabApi(SupersetTestCase):
             "unauth_user1",
             "password",
             "Dummy Role",
-            email="unauth_user1@superset.org",  # noqa: F541
+            email="unauth_user1@superset.org",
         )
         self.login(username="unauth_user1", password="password")  # noqa: S106
         rv = self.client.get("/api/v1/sqllab/")

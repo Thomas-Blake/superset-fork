@@ -3803,7 +3803,7 @@ class TestDatabaseApi(SupersetTestCase):
         self,
         ValidateDatabaseParametersCommand,  # noqa: N803
         is_port_open,
-        is_hostname_valid,  # noqa: N803
+        is_hostname_valid,
     ):
         is_hostname_valid.return_value = True
         is_port_open.return_value = True
@@ -4358,7 +4358,7 @@ class TestDatabaseApi(SupersetTestCase):
         expected_names = [db.database_name for db in dbs]
         expected_names.sort()
 
-        uri = "api/v1/database/"  # noqa: F541
+        uri = "api/v1/database/"
         # Get the list of databases without filter in the config
         rv = self.client.get(uri)
         data = json.loads(rv.data.decode("utf-8"))
@@ -4377,7 +4377,7 @@ class TestDatabaseApi(SupersetTestCase):
             "flask.current_app.config",
             {"EXTRA_DYNAMIC_QUERY_FILTERS": {"databases": base_filter_mock}},
         ):
-            uri = "api/v1/database/"  # noqa: F541
+            uri = "api/v1/database/"
             rv = self.client.get(uri)
             data = json.loads(rv.data.decode("utf-8"))
             # Only one database start with dyntest

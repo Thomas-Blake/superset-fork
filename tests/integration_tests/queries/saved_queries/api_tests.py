@@ -673,7 +673,7 @@ class TestSavedQueryApi(SupersetTestCase):
         """
         Saved Query API: Test create
         """
-        self.get_user("admin")  # noqa: F841
+        self.get_user("admin")
         example_db = get_example_database()
 
         post_data = {

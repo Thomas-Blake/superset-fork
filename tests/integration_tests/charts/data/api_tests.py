@@ -70,7 +70,7 @@ from tests.integration_tests.fixtures.energy_dashboard import (
     load_energy_table_with_slice,  # noqa: F401
 )
 from tests.integration_tests.fixtures.query_context import get_query_context
-from tests.integration_tests.test_app import app  # noqa: F811
+from tests.integration_tests.test_app import app
 
 CHART_DATA_URI = "api/v1/chart/data"
 CHARTS_FIXTURE_COUNT = 10
@@ -1412,7 +1412,7 @@ class TestGetChartDataApi(BaseTestChartDataApi):
         orig_run = ChartDataCommand.run
 
         def mock_run(self, **kwargs):
-            assert kwargs["force_cached"] is True  # noqa: E712
+            assert kwargs["force_cached"] is True
             # override force_cached to get result from DB
             return orig_run(self, force_cached=False)
 
@@ -1461,7 +1461,7 @@ class TestGetChartDataApi(BaseTestChartDataApi):
         orig_run = ChartDataCommand.run
 
         def mock_run(self, **kwargs):
-            assert kwargs["force_cached"] is True  # noqa: E712
+            assert kwargs["force_cached"] is True
             # override force_cached to get result from DB
             return orig_run(self, force_cached=False)
 

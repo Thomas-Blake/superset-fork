@@ -151,7 +151,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
     def create_chart_with_report(self):
         with self.create_app().app_context():
             admin = self.get_user("admin")
-            chart = self.insert_chart("chart_report", [admin.id], 1)  # noqa: F541
+            chart = self.insert_chart("chart_report", [admin.id], 1)
             report_schedule = ReportSchedule(
                 type=ReportScheduleType.REPORT,
                 name="report_with_chart",
@@ -833,7 +833,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         Chart API: Test update chart admin can clear owner list
         """
         chart_data = {"slice_name": "title1_changed", "owners": []}
-        self.get_user("admin")  # noqa: F841
+        self.get_user("admin")
         self.login(username="admin")
         uri = f"api/v1/chart/{self.chart.id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
@@ -1008,7 +1008,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
             "owners": [1000],
         }
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/chart/"  # noqa: F541
+        uri = "api/v1/chart/"
         rv = self.client.post(uri, json=chart_data)
         assert rv.status_code == 422
         response = json.loads(rv.data.decode("utf-8"))
@@ -1143,7 +1143,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         Chart API: Test get charts
         """
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/chart/"  # noqa: F541
+        uri = "api/v1/chart/"
         rv = self.get_assert_metric(uri, "get_list")
         assert rv.status_code == 200
         data = json.loads(rv.data.decode("utf-8"))
@@ -2072,7 +2072,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
 
             assert json.loads(
                 self.client.put(
-                    "/api/v1/chart/warm_up_cache",  # noqa: F541
+                    "/api/v1/chart/warm_up_cache",
                     json={"chart_id": slc.id},
                 ).data
             ) == {
@@ -2099,7 +2099,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
 
             assert json.loads(
                 self.client.put(
-                    "/api/v1/chart/warm_up_cache",  # noqa: F541
+                    "/api/v1/chart/warm_up_cache",
                     json={"chart_id": slc.id},
                 ).data
             ) == {

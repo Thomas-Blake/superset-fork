@@ -604,7 +604,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
     @pytest.mark.usefixtures("create_tags")
     def test_add_tag_not_found(self):
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/tag/123/favorites/"  # noqa: F541
+        uri = "api/v1/tag/123/favorites/"
         rv = self.client.post(uri, follow_redirects=True)
 
         assert rv.status_code == 404
@@ -623,7 +623,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
         # Get an ID not in use
         non_existent_id = max(existing_ids, default=0) + 1
 
-        uri = f"api/v1/tag/{non_existent_id}/favorites/"  # noqa: F541
+        uri = f"api/v1/tag/{non_existent_id}/favorites/"
         rv = self.client.delete(uri, follow_redirects=True)
 
         assert rv.status_code == 404
@@ -633,7 +633,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
     def test_add_tag_user_not_found(self, flask_g):
         self.login(ADMIN_USERNAME)
         flask_g.user = None
-        uri = "api/v1/tag/123/favorites/"  # noqa: F541
+        uri = "api/v1/tag/123/favorites/"
         rv = self.client.post(uri, follow_redirects=True)
 
         assert rv.status_code == 422
@@ -643,7 +643,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
     def test_delete_favorite_tag_user_not_found(self, flask_g):
         self.login(ADMIN_USERNAME)
         flask_g.user = None
-        uri = "api/v1/tag/123/favorites/"  # noqa: F541
+        uri = "api/v1/tag/123/favorites/"
         rv = self.client.delete(uri, follow_redirects=True)
 
         assert rv.status_code == 422
@@ -651,7 +651,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
     @pytest.mark.usefixtures("load_world_bank_dashboard_with_slices")
     def test_post_tag(self):
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/tag/"  # noqa: F541
+        uri = "api/v1/tag/"
         dashboard = (
             db.session.query(Dashboard)
             .filter(Dashboard.dashboard_title == "World Bank's Data")
@@ -663,7 +663,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
         )
 
         assert rv.status_code == 201
-        self.get_user(username="admin").get_id()  # noqa: F841
+        self.get_user(username="admin").get_id()
         tag = (
             db.session.query(Tag)
             .filter(Tag.name == "my_tag", Tag.type == TagType.custom)
@@ -674,7 +674,7 @@ class TestTagApi(InsertChartMixin, SupersetTestCase):
     @pytest.mark.usefixtures("load_world_bank_dashboard_with_slices")
     def test_post_tag_no_name_400(self):
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/tag/"  # noqa: F541
+        uri = "api/v1/tag/"
         dashboard = (
             db.session.query(Dashboard)
             .filter(Dashboard.dashboard_title == "World Bank's Data")
