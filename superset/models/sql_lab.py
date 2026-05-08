@@ -31,7 +31,7 @@ from flask_appbuilder.models.decorators import renders
 from flask_babel import gettext as __
 from humanize import naturaltime
 from jinja2.exceptions import TemplateError
-from markupsafe import Markup
+from markupsafe import escape, Markup
 from sqlalchemy import (
     Boolean,
     Column,
@@ -500,12 +500,12 @@ class SavedQuery(
     @property
     def pop_tab_link(self) -> Markup:
         return Markup(
-            f"""
-            <a href="/sqllab?savedQueryId={self.id}">
+            """
+            <a href="/sqllab?savedQueryId={}">
                 <i class="fa fa-link"></i>
             </a>
         """
-        )
+        ).format(escape(self.id))
 
     @property
     def user_email(self) -> str:
