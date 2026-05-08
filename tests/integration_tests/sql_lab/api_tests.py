@@ -25,14 +25,12 @@ import io
 
 import pytest
 import rison
-from sqlalchemy.sql import func  # noqa: F401
 from unittest import mock
 
 from flask_appbuilder.security.sqla.models import Role
 from tests.integration_tests.test_app import app
 from superset import db, sql_lab
 from superset.common.db_query_status import QueryStatus
-from superset.models.core import Database  # noqa: F401
 from superset.utils.database import (
     get_example_database,
 )
@@ -223,7 +221,7 @@ class TestSqlLabApi(SupersetTestCase):
             }
         }
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
         data = {"sql": "SELECT 1"}
@@ -233,7 +231,7 @@ class TestSqlLabApi(SupersetTestCase):
         )
         failed_resp = {"message": {"database_id": ["Missing data for required field."]}}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
         data = {"database_id": 1}
@@ -243,7 +241,7 @@ class TestSqlLabApi(SupersetTestCase):
         )
         failed_resp = {"message": {"sql": ["Missing data for required field."]}}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
     def test_estimate_valid_request(self):
@@ -273,7 +271,7 @@ class TestSqlLabApi(SupersetTestCase):
 
         success_resp = {"result": formatter_response}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, success_resp)  # noqa: PT009
+        assert resp_data == success_resp
         assert rv.status_code == 200
 
     def test_format_sql_request(self):
@@ -286,7 +284,7 @@ class TestSqlLabApi(SupersetTestCase):
         )
         success_resp = {"result": "SELECT\n  1\nFROM my_table"}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, success_resp)  # noqa: PT009
+        assert resp_data == success_resp
         assert rv.status_code == 200
 
     def test_format_sql_request_with_db_id(self):
@@ -353,7 +351,7 @@ class TestSqlLabApi(SupersetTestCase):
             }
         }
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
         data = {"sql": "SELECT 1", "client_id": client_id}
@@ -363,7 +361,7 @@ class TestSqlLabApi(SupersetTestCase):
         )
         failed_resp = {"message": {"database_id": ["Missing data for required field."]}}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
         data = {"database_id": 1, "client_id": client_id}
@@ -373,7 +371,7 @@ class TestSqlLabApi(SupersetTestCase):
         )
         failed_resp = {"message": {"sql": ["Missing data for required field."]}}
         resp_data = json.loads(rv.data.decode("utf-8"))
-        self.assertDictEqual(resp_data, failed_resp)  # noqa: PT009
+        assert resp_data == failed_resp
         assert rv.status_code == 400
 
     @mock.patch("superset.commands.sql_lab.results.results_backend_use_msgpack", False)
@@ -411,7 +409,7 @@ class TestSqlLabApi(SupersetTestCase):
         sql_lab_mock.return_value = resp
 
         dbobj = self.create_fake_db_for_macros()
-        json_payload = dict(database_id=dbobj.id, sql=sql)  # noqa: C408
+        json_payload = {"database_id": dbobj.id, "sql": sql}
         self.get_json_resp(
             "/api/v1/sqllab/execute/", raise_on_error=False, json_=json_payload
         )

@@ -15,17 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 from collections.abc import Iterator
-from unittest.mock import patch  # noqa: F401
 from uuid import uuid3
 
 import pytest
-from flask_appbuilder.security.sqla.models import User  # noqa: F401
-from sqlalchemy.orm import Session  # noqa: F401
 
 from superset import db
-from superset.commands.dashboard.exceptions import (
-    DashboardAccessDeniedError,  # noqa: F401
-)
 from superset.key_value.models import KeyValueEntry
 from superset.key_value.types import KeyValueResource
 from superset.key_value.utils import decode_permalink_id

@@ -93,7 +93,7 @@ class TestDatasetApi(SupersetTestCase):
         metrics: list[SqlMetric] | None = None,
         extra: str | None = None,
     ) -> SqlaTable:
-        obj_owners = list()  # noqa: C408
+        obj_owners = []
         for owner in owners:
             user = db.session.query(security_manager.user_model).get(owner)
             obj_owners.append(user)

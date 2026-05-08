@@ -29,7 +29,6 @@ import pytest
 
 from unittest.mock import Mock
 
-from sqlalchemy.engine.url import make_url  # noqa: F401
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.sql import func
 
@@ -37,7 +36,6 @@ from superset import db, security_manager
 from superset.commands.database.exceptions import MissingOAuth2TokenError
 from superset.connectors.sqla.models import SqlaTable
 from superset.databases.ssh_tunnel.models import SSHTunnel
-from superset.databases.utils import make_url_safe  # noqa: F401
 from superset.db_engine_specs.mysql import MySQLEngineSpec
 from superset.db_engine_specs.postgres import PostgresEngineSpec
 from superset.db_engine_specs.redshift import RedshiftEngineSpec

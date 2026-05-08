@@ -870,9 +870,14 @@ class TestPostChartDataApi(BaseTestChartDataApi):
         mock_run.assert_not_called()
         data = json.loads(rv.data.decode("utf-8"))
         keys = list(data.keys())
-        self.assertCountEqual(  # noqa: PT009
-            keys, ["channel_id", "job_id", "user_id", "status", "errors", "result_url"]
-        )
+        assert set(keys) == {
+            "channel_id",
+            "job_id",
+            "user_id",
+            "status",
+            "errors",
+            "result_url",
+        }
 
     @with_feature_flags(GLOBAL_ASYNC_QUERIES=True)
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
@@ -1546,7 +1551,7 @@ class TestGetChartDataApi(BaseTestChartDataApi):
         data = json.loads(rv.data.decode("utf-8"))
         result = data["result"]
         excluded_key = "query"
-        assert all([excluded_key not in query for query in result])  # noqa: C419
+        assert all(excluded_key not in query for query in result)
 
     def test_chart_data_table_chart_with_time_grain_filter(self):
         """

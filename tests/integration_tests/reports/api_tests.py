@@ -385,16 +385,16 @@ class TestReportSchedulesApi(SupersetTestCase):
         assert rv.status_code == 200
         data = json.loads(rv.data.decode("utf-8"))
         assert data["count"] == REPORTS_COUNT
-        data_keys = sorted(list(data["result"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][0].keys())
         assert expected_fields == data_keys
 
         # Assert nested fields
         expected_owners_fields = ["email", "first_name", "id", "last_name"]
-        data_keys = sorted(list(data["result"][0]["owners"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][0]["owners"][0].keys())
         assert expected_owners_fields == data_keys
 
         expected_recipients_fields = ["id", "type"]
-        data_keys = sorted(list(data["result"][1]["recipients"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][1]["recipients"][0].keys())
         assert expected_recipients_fields == data_keys
 
     @parameterized.expand(

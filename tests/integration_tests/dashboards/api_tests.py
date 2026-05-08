@@ -919,9 +919,9 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
             assert data_by_id["count"] == data_by_name["count"], len(
                 expected_dashboards
             )
-            assert set(chart["id"] for chart in data_by_id["result"]) == set(  # noqa: C401
+            assert {chart["id"] for chart in data_by_id["result"]} == {
                 chart["id"] for chart in data_by_name["result"]
-            ), set(chart.id for chart in expected_dashboards)  # noqa: C401
+            }, {chart.id for chart in expected_dashboards}
 
     @pytest.mark.usefixtures("create_dashboards")
     def test_get_current_user_favorite_status(self):
@@ -1379,7 +1379,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         admin_id = self.get_user("admin").id
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1406,7 +1406,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         user = self.get_user("admin")
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1540,7 +1540,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         gamma_id = self.get_user("gamma").id
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1605,7 +1605,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         )
 
         dashboard_count = 4
-        dashboards = list()  # noqa: C408
+        dashboards = []
         for dashboard_name_index in range(dashboard_count):
             dashboards.append(
                 self.insert_dashboard(
@@ -3199,7 +3199,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         assert dash.dashboard_title == "copied dash"
         assert dash.css == "<css>"
         assert dash.owners == [security_manager.find_user("admin")]
-        self.assertCountEqual(dash.slices, original_dash.slices)  # noqa: PT009
+        assert {s.id for s in dash.slices} == {s.id for s in original_dash.slices}
         assert dash.params_dict["color_namespace"] == "Color Namespace Test"
         assert dash.params_dict["color_scheme"] == "Color Scheme Test"
 

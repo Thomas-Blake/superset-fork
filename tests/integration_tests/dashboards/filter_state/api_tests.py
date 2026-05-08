@@ -14,17 +14,11 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-from unittest.mock import patch  # noqa: F401
-
 import pytest
 from flask.ctx import AppContext
 from flask_appbuilder.security.sqla.models import User
-from sqlalchemy.orm import Session  # noqa: F401
 
 from superset import db
-from superset.commands.dashboard.exceptions import (
-    DashboardAccessDeniedError,  # noqa: F401
-)
 from superset.commands.temporary_cache.entry import Entry
 from superset.extensions import cache_manager
 from superset.models.dashboard import Dashboard

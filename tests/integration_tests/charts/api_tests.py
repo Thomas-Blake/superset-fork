@@ -327,7 +327,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         """
         admin = self.get_user("admin")
         chart_count = 4
-        chart_ids = list()  # noqa: C408
+        chart_ids = []
         for chart_name_index in range(chart_count):
             chart_ids.append(
                 self.insert_chart(f"title{chart_name_index}", [admin.id], 1, admin).id
@@ -441,7 +441,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         """
         gamma_id = self.get_user("gamma").id
         chart_count = 4
-        chart_ids = list()  # noqa: C408
+        chart_ids = []
         for chart_name_index in range(chart_count):
             chart_ids.append(
                 self.insert_chart(f"title{chart_name_index}", [gamma_id], 1).id
@@ -492,7 +492,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         )
 
         chart_count = 4
-        charts = list()  # noqa: C408
+        charts = []
         for chart_name_index in range(chart_count):
             charts.append(
                 self.insert_chart(f"title{chart_name_index}", [user_alpha1.id], 1)
@@ -1233,9 +1233,9 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
 
             # Compare results
             assert data_by_id["count"] == data_by_name["count"], len(expected_charts)
-            assert set(chart["id"] for chart in data_by_id["result"]) == set(  # noqa: C401
+            assert {chart["id"] for chart in data_by_id["result"]} == {
                 chart["id"] for chart in data_by_name["result"]
-            ), set(chart.id for chart in expected_charts)  # noqa: C401
+            }, {chart.id for chart in expected_charts}
 
     def test_get_charts_changed_on(self):
         """

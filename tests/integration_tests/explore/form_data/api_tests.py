@@ -18,7 +18,6 @@ from unittest.mock import patch
 
 import pytest
 from flask_appbuilder.security.sqla.models import User
-from sqlalchemy.orm import Session  # noqa: F401
 
 from superset import db
 from superset.commands.dataset.exceptions import DatasetAccessDeniedError
@@ -41,21 +40,21 @@ UPDATED_FORM_DATA = json.dumps({"test": "updated value"})
 
 @pytest.fixture
 def chart_id(load_world_bank_dashboard_with_slices) -> int:  # noqa: F811
-    with app.app_context() as ctx:  # noqa: F841
+    with app.app_context():
         chart = db.session.query(Slice).filter_by(slice_name="World's Population").one()
         return chart.id
 
 
 @pytest.fixture
 def admin_id() -> int:
-    with app.app_context() as ctx:  # noqa: F841
+    with app.app_context():
         admin = db.session.query(User).filter_by(username="admin").one()
         return admin.id
 
 
 @pytest.fixture
 def datasource() -> int:
-    with app.app_context() as ctx:  # noqa: F841
+    with app.app_context():
         dataset = (
             db.session.query(SqlaTable)
             .filter_by(table_name="wb_health_population")
@@ -351,7 +350,7 @@ def test_put_not_owner(test_client, login_as, chart_id: int, datasource: SqlaTab
 
 
 def test_get_key_not_found(test_client, login_as_admin):
-    resp = test_client.get(f"api/v1/explore/form_data/unknown-key")  # noqa: F541
+    resp = test_client.get("api/v1/explore/form_data/unknown-key")
     assert resp.status_code == 404
 
 
