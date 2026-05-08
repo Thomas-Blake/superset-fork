@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+import pickle
 from contextlib import nullcontext
 from typing import Any
 
@@ -21,7 +22,10 @@ import pytest
 from marshmallow import Schema
 
 from superset.dashboards.permalink.schemas import DashboardPermalinkSchema
-from superset.key_value.exceptions import KeyValueCodecEncodeException
+from superset.key_value.exceptions import (
+    KeyValueCodecDecodeException,
+    KeyValueCodecEncodeException,
+)
 from superset.key_value.types import (
     JsonKeyValueCodec,
     MarshmallowKeyValueCodec,
@@ -120,3 +124,21 @@ def test_pickle_codec(input_: Any, expected_result: Any):
     codec = PickleKeyValueCodec()
     encoded_value = codec.encode(input_)
     assert expected_result == codec.decode(encoded_value)
+
+
+def test_pickle_codec_rejects_unsafe_payload():
+    """
+    The pickle codec must refuse to deserialize payloads that reference
+    classes or callables outside of the allow-list, even if those payloads
+    are syntactically valid pickle streams. This protects callers from the
+    classic ``pickle.loads`` remote-code-execution vector.
+    """
+
+    class _RCEPayload:
+        def __reduce__(self):  # type: ignore[no-untyped-def]
+            return (eval, ("__import__('os').name",))
+
+    malicious_bytes = pickle.dumps(_RCEPayload())
+    codec = PickleKeyValueCodec()
+    with pytest.raises(KeyValueCodecDecodeException):
+        codec.decode(malicious_bytes)
