@@ -180,7 +180,7 @@ def test_custom_process_template(
     tp = get_template_processor(database=database)
 
     template = "SELECT '$DATE()'"
-    assert tp.process_template(template) == f"SELECT '1970-01-01'"  # noqa: F541
+    assert tp.process_template(template) == "SELECT '1970-01-01'"
 
     template = "SELECT '$DATE(1, 2)'"
     assert tp.process_template(template) == "SELECT '1970-01-02'"
