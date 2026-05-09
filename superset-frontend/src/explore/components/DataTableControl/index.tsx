@@ -16,7 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useMemo, useState, useEffect, useRef, RefObject } from 'react';
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  MouseEvent,
+} from 'react';
 import { t } from '@apache-superset/core/translation';
 import { getTimeFormatter, safeHtmlSpan, TimeFormats } from '@superset-ui/core';
 import { css, styled, useTheme } from '@apache-superset/core/theme';
@@ -31,6 +38,8 @@ import {
   Popover,
   Radio,
 } from '@superset-ui/core/components';
+import type { InputRef } from '@superset-ui/core/components/Input';
+import type { RadioChangeEvent } from '@superset-ui/core/components/Radio';
 import { CopyToClipboard } from 'src/components';
 import {
   prepareCopyToClipboardTabularData,
@@ -105,7 +114,7 @@ export const FilterInput = ({
   onChangeHandler(filterText: string): void;
   shouldFocus?: boolean;
 }) => {
-  const inputRef: RefObject<any> = useRef(null);
+  const inputRef = useRef<InputRef>(null);
 
   useEffect(() => {
     // Focus the input element when the component mounts
@@ -123,7 +132,7 @@ export const FilterInput = ({
     <Input
       prefix={<Icons.SearchOutlined iconSize="l" />}
       placeholder={t('Search')}
-      onChange={(event: any) => {
+      onChange={(event: ChangeEvent<HTMLInputElement>) => {
         const filterText = event.target.value;
         debouncedChangeHandler(filterText);
       }}
@@ -145,7 +154,7 @@ const FormatPicker = ({
   onChange,
   value,
 }: {
-  onChange: any;
+  onChange: (event: RadioChangeEvent) => void;
   value: FormatPickerValue;
 }) => (
   <Radio.GroupWrapper
@@ -196,7 +205,7 @@ const DataTableTemporalHeaderCell = ({
 }) => {
   const theme = useTheme();
 
-  const onChange = (e: any) => {
+  const onChange = (e: RadioChangeEvent) => {
     onTimeColumnChange(columnName, e.target.value);
   };
 
@@ -204,7 +213,7 @@ const DataTableTemporalHeaderCell = ({
     () =>
       datasourceId ? ( // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <FormatPickerContainer
-          onClick={(e: React.MouseEvent<HTMLElement>) => e.stopPropagation()}
+          onClick={(e: MouseEvent<HTMLElement>) => e.stopPropagation()}
         >
           {/* hack to disable click propagation from popover content to table header, which triggers sorting column */}
           <FormatPickerLabel>{t('Column Formatting')}</FormatPickerLabel>
@@ -233,7 +242,7 @@ const DataTableTemporalHeaderCell = ({
           iconSize="m"
           iconColor={theme.colorIcon}
           css={{ marginRight: `${theme.sizeUnit}px` }}
-          onClick={(e: React.MouseEvent<HTMLElement>) => e.stopPropagation()}
+          onClick={(e: MouseEvent<HTMLElement>) => e.stopPropagation()}
         />
       </Popover>
       {displayLabel ?? columnName}
