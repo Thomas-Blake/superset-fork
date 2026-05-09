@@ -16,8 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, useMemo, useState, ReactNode } from 'react';
+import { useEffect, useMemo, useState, ReactNode, SyntheticEvent } from 'react';
 import {
+  CellProps,
+  Column,
+  HeaderProps,
   useFilters,
   usePagination,
   useRowSelect,
@@ -45,14 +48,19 @@ import {
   ViewModeType,
 } from './types';
 
+type RisonParamData = Record<string, InnerFilterValue>;
+
 // Define custom RisonParam for proper encoding/decoding; note that
 // %, &, +, and # must be encoded to avoid breaking the url
-const RisonParam: QueryParamConfig<string, any> = {
-  encode: (data?: any | null) => {
+const RisonParam: QueryParamConfig<
+  RisonParamData | null | undefined,
+  RisonParamData | undefined
+> = {
+  encode: (data?: RisonParamData | null) => {
     if (data === undefined || data === null) return undefined;
 
     const cleanData = JSON.parse(
-      JSON.stringify(data, (key, value) =>
+      JSON.stringify(data, (_key, value) =>
         value === undefined ? null : value,
       ),
     );
@@ -67,7 +75,7 @@ const RisonParam: QueryParamConfig<string, any> = {
   decode: (dataStr?: string | string[]) =>
     dataStr === undefined || Array.isArray(dataStr)
       ? undefined
-      : rison.decode(dataStr),
+      : (rison.decode(dataStr) as RisonParamData),
 };
 
 export const SELECT_WIDTH = 176;
@@ -79,17 +87,17 @@ export class ListViewError extends Error {
 }
 
 // removes element from a list, returns new list
-export function removeFromList(list: any[], index: number): any[] {
+export function removeFromList<T>(list: T[], index: number): T[] {
   return list.filter((_, i) => index !== i);
 }
 
 // apply update to elements of object list, returns new list
-function updateInList(list: any[], index: number, update: any): any[] {
-  const element = list.find((_, i) => index === i);
+function updateInList<T>(list: T[], index: number, update: Partial<T>): T[] {
+  const element = list[index];
 
   return [
     ...list.slice(0, index),
-    { ...element, ...update },
+    { ...element, ...update } as T,
     ...list.slice(index + 1),
   ];
 }
@@ -143,7 +151,7 @@ export function convertFilters(fts: InternalFilter[]): FilterValue[] {
 
 // convertFilters but to handle new decoded rison format
 export function convertFiltersRison(
-  filterObj: any,
+  filterObj: Record<string, InnerFilterValue>,
   list: Filter[],
 ): FilterValue[] {
   const filters: FilterValue[] = [];
@@ -174,7 +182,10 @@ export function convertFiltersRison(
   return filters;
 }
 
-export function extractInputValue(inputType: Filter['input'], event: any) {
+export function extractInputValue(
+  inputType: Filter['input'],
+  event: SyntheticEvent<HTMLInputElement>,
+) {
   if (!inputType || inputType === 'text') {
     return event.currentTarget.value;
   }
@@ -185,10 +196,10 @@ export function extractInputValue(inputType: Filter['input'], event: any) {
   return null;
 }
 
-interface UseListViewConfig {
-  fetchData: (conf: FetchDataConfig) => any;
-  columns: any[];
-  data: any[];
+interface UseListViewConfig<D extends object = object> {
+  fetchData: (conf: FetchDataConfig) => void;
+  columns: Column<D>[];
+  data: D[];
   count: number;
   initialPageSize: number;
   initialSort?: SortColumn[];
@@ -196,14 +207,22 @@ interface UseListViewConfig {
   initialFilters?: Filter[];
   bulkSelectColumnConfig?: {
     id: string;
-    Header: (conf: any) => ReactNode;
-    Cell: (conf: any) => ReactNode;
+    Header: (conf: HeaderProps<D>) => ReactNode;
+    Cell: (conf: CellProps<D>) => ReactNode;
   };
   renderCard?: boolean;
   defaultViewMode?: ViewModeType;
 }
 
-export function useListViewState({
+interface ListViewQueryParams {
+  filters?: Record<string, InnerFilterValue>;
+  pageIndex: number;
+  sortColumn?: string;
+  sortOrder?: 'asc' | 'desc';
+  viewMode?: ViewModeType;
+}
+
+export function useListViewState<D extends object = object>({
   fetchData,
   columns,
   data,
@@ -215,7 +234,7 @@ export function useListViewState({
   bulkSelectColumnConfig,
   renderCard = false,
   defaultViewMode = 'card',
-}: UseListViewConfig) {
+}: UseListViewConfig<D>) {
   const [query, setQuery] = useQueryParams({
     filters: RisonParam,
     pageIndex: NumberParam,
@@ -246,13 +265,13 @@ export function useListViewState({
       (renderCard ? defaultViewMode : 'table'),
   );
 
-  const columnsWithSelect = useMemo(() => {
+  const columnsWithSelect = useMemo<Column<D>[]>(() => {
     // add exact filter type so filters with falsy values are not filtered out
     const columnsWithFilter = columns.map(f => ({ ...f, filter: 'exact' }));
-    return bulkSelectMode
+    return bulkSelectMode && bulkSelectColumnConfig
       ? [bulkSelectColumnConfig, ...columnsWithFilter]
       : columnsWithFilter;
-  }, [bulkSelectMode, columns]);
+  }, [bulkSelectMode, bulkSelectColumnConfig, columns]);
 
   const {
     getTableProps,
@@ -269,26 +288,26 @@ export function useListViewState({
     selectedFlatRows,
     toggleAllRowsSelected,
     state: { pageIndex, pageSize, sortBy, filters },
-  } = useTable(
+  } = useTable<D>(
     {
       columns: columnsWithSelect,
       data,
       disableFilters: true,
       disableSortRemove: true,
-      initialState: initialState as any,
+      initialState,
       manualFilters: true,
       manualPagination: true,
       manualSortBy: true,
       autoResetFilters: false,
       pageCount: Math.ceil(count / initialPageSize),
-      ...({ count } as any),
+      count,
     },
     useFilters,
     useSortBy,
     usePagination,
     useRowState,
     useRowSelect,
-  ) as any;
+  );
 
   const [internalFilters, setInternalFilters] = useState<InternalFilter[]>(
     query.filters && initialFilters.length
@@ -321,7 +340,7 @@ export function useListViewState({
       }
     });
 
-    const queryParams: any = {
+    const queryParams: ListViewQueryParams = {
       filters: Object.keys(filterObj).length ? filterObj : undefined,
       pageIndex,
     };
@@ -351,7 +370,7 @@ export function useListViewState({
     }
   }, [query]);
 
-  const applyFilterValue = (index: number, value: any) => {
+  const applyFilterValue = (index: number, value: InnerFilterValue) => {
     setInternalFilters(currentInternalFilters => {
       // skip redundant updates
       if (currentInternalFilters[index].value === value) {
