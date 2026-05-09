@@ -44,22 +44,28 @@ export const OAuth2ClientField = ({
   default_value: defaultValue,
 }: FieldPropTypes) => {
   const encryptedExtra = JSON.parse(db?.masked_encrypted_extra || '{}');
+  const defaultClientInfo: Partial<OAuth2ClientInfo> =
+    defaultValue &&
+    typeof defaultValue === 'object' &&
+    !Array.isArray(defaultValue)
+      ? (defaultValue as Partial<OAuth2ClientInfo>)
+      : {};
   const [oauth2ClientInfo, setOauth2ClientInfo] = useState<OAuth2ClientInfo>({
     id: encryptedExtra.oauth2_client_info?.id || '',
     secret: encryptedExtra.oauth2_client_info?.secret || '',
     authorization_request_uri:
       encryptedExtra.oauth2_client_info?.authorization_request_uri ||
-      defaultValue?.authorization_request_uri ||
+      defaultClientInfo.authorization_request_uri ||
       '',
     token_request_uri:
       encryptedExtra.oauth2_client_info?.token_request_uri ||
-      defaultValue?.token_request_uri ||
+      defaultClientInfo.token_request_uri ||
       '',
     scope:
-      encryptedExtra.oauth2_client_info?.scope || defaultValue?.scope || '',
+      encryptedExtra.oauth2_client_info?.scope || defaultClientInfo.scope || '',
   });
 
-  const handleChange = (key: any) => (e: any) => {
+  const handleChange = (key: keyof OAuth2ClientInfo) => (e: any) => {
     const updatedInfo = {
       ...oauth2ClientInfo,
       [key]: e.target.value,
