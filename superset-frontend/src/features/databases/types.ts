@@ -289,25 +289,34 @@ export type CustomEventHandlerType = EventHandler<
   ChangeEvent<CustomHTMLInputElement | CustomHTMLTextAreaElement>
 >;
 
+export type DatabaseFieldDefaultValue =
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | null;
+
 export interface FieldPropTypes {
   required: boolean;
   hasTooltip?: boolean;
-  tooltipText?: (value: any) => string;
+  tooltipText?: string;
   placeholder?: string;
   onParametersChange: (event: CustomParametersChangeType) => void;
-  onParametersUploadFileChange: (value: any) => string;
+  onParametersUploadFileChange: (event: CustomParametersChangeType) => void;
   changeMethods: {
     onParametersChange: (event: CustomParametersChangeType) => void;
   } & {
-    onChange: (value: any) => string;
+    onChange: (event: CustomParametersChangeType) => void;
   } & {
-    onQueryChange: (value: any) => string;
-  } & { onParametersUploadFileChange: (value: any) => string } & {
+    onQueryChange: (event: CustomParametersChangeType) => void;
+  } & {
+    onParametersUploadFileChange: (event: CustomParametersChangeType) => void;
+  } & {
     onAddTableCatalog: () => void;
     onRemoveTableCatalog: (idx: number) => void;
   } & {
-    onExtraInputChange: (value: any) => void;
-    onEncryptedExtraInputChange: (value: any) => void;
+    onExtraInputChange: (event: CustomParametersChangeType) => void;
+    onEncryptedExtraInputChange: (event: CustomParametersChangeType) => void;
     onSSHTunnelParametersChange: CustomEventHandlerType;
   };
   validationErrors: JsonObject | null;
@@ -316,7 +325,7 @@ export interface FieldPropTypes {
   db?: DatabaseObject;
   dbModel?: DatabaseForm;
   field: string;
-  default_value?: any;
+  default_value?: DatabaseFieldDefaultValue;
   description?: string;
   isEditMode?: boolean;
   sslForced?: boolean;
