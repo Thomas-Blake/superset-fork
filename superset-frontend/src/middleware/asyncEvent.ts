@@ -41,10 +41,10 @@ type AsyncEvent = {
 
 type CachedDataResponse = {
   status: string;
-  data: any;
+  data: Record<string, unknown>[];
 };
-type AppConfig = Record<string, any>;
-type ListenerFn = (asyncEvent: AsyncEvent) => Promise<any>;
+type AppConfig = Record<string, string | number | boolean>;
+type ListenerFn = (asyncEvent: AsyncEvent) => Promise<void>;
 
 const TRANSPORT_POLLING = 'polling';
 const TRANSPORT_WS = 'ws';
@@ -67,7 +67,7 @@ let listenersByJobId: Record<string, ListenerFn>;
 let retriesByJobId: Record<string, number>;
 let lastReceivedEventId: string | null | undefined;
 
-const addListener = (id: string, fn: any) => {
+const addListener = (id: string, fn: ListenerFn) => {
   listenersByJobId[id] = fn;
 };
 
@@ -185,11 +185,11 @@ const loadEventsFromApi = async () => {
 const wsConnectMaxRetries = 6;
 const wsConnectErrorDelay = 2500;
 let wsConnectRetries = 0;
-let wsConnectTimeout: any;
+let wsConnectTimeout: ReturnType<typeof setTimeout>;
 let ws: WebSocket;
 
 const wsConnect = (): void => {
-  let url = config.GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL;
+  let url = config.GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL as string;
   if (lastReceivedEventId) url += `?last_id=${lastReceivedEventId}`;
   ws = new WebSocket(url);
 
@@ -236,8 +236,9 @@ export const init = (appConfig?: AppConfig) => {
   lastReceivedEventId = null;
 
   config = appConfig || getBootstrapData().common.conf;
-  transport = config.GLOBAL_ASYNC_QUERIES_TRANSPORT || TRANSPORT_POLLING;
-  pollingDelayMs = config.GLOBAL_ASYNC_QUERIES_POLLING_DELAY || 500;
+  transport =
+    (config.GLOBAL_ASYNC_QUERIES_TRANSPORT as string) || TRANSPORT_POLLING;
+  pollingDelayMs = (config.GLOBAL_ASYNC_QUERIES_POLLING_DELAY as number) || 500;
 
   try {
     lastReceivedEventId = localStorage.getItem(LOCALSTORAGE_KEY);
