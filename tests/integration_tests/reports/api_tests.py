@@ -321,7 +321,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule API: Test info
         """
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/report/_info"  # noqa: F541
+        uri = "api/v1/report/_info"
         rv = self.get_assert_metric(uri, "info")
         assert rv.status_code == 200
 
@@ -356,7 +356,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test get list report schedules
         """
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/report/"  # noqa: F541
+        uri = "api/v1/report/"
         rv = self.get_assert_metric(uri, "get_list")
 
         expected_fields = [
@@ -385,16 +385,16 @@ class TestReportSchedulesApi(SupersetTestCase):
         assert rv.status_code == 200
         data = json.loads(rv.data.decode("utf-8"))
         assert data["count"] == REPORTS_COUNT
-        data_keys = sorted(list(data["result"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][0].keys())
         assert expected_fields == data_keys
 
         # Assert nested fields
         expected_owners_fields = ["email", "first_name", "id", "last_name"]
-        data_keys = sorted(list(data["result"][0]["owners"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][0]["owners"][0].keys())
         assert expected_owners_fields == data_keys
 
         expected_recipients_fields = ["id", "type"]
-        data_keys = sorted(list(data["result"][1]["recipients"][0].keys()))  # noqa: C414
+        data_keys = sorted(data["result"][1]["recipients"][0].keys())
         assert expected_recipients_fields == data_keys
 
     @parameterized.expand(
@@ -435,7 +435,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test get list report schedules for different roles
         """
         self.login(username)
-        uri = "api/v1/report/"  # noqa: F541
+        uri = "api/v1/report/"
         rv = self.get_assert_metric(uri, "get_list")
 
         assert rv.status_code == 200
@@ -447,7 +447,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test get list report schedules for regular gamma user
         """
         self.login(GAMMA_USERNAME)
-        uri = "api/v1/report/"  # noqa: F541
+        uri = "api/v1/report/"
         rv = self.client.get(uri)
 
         assert rv.status_code == 403
@@ -925,9 +925,9 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test create report schedule with unsaved chart
         """
         self.login(ADMIN_USERNAME)
-        db.session.query(Slice).first()  # noqa: F841
-        db.session.query(Dashboard).first()  # noqa: F841
-        get_example_database()  # noqa: F841
+        db.session.query(Slice).first()
+        db.session.query(Dashboard).first()
+        get_example_database()
 
         report_schedule_data = {
             "type": ReportScheduleType.REPORT,
@@ -954,9 +954,9 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test create report schedule with no dashboard id
         """
         self.login(ADMIN_USERNAME)
-        db.session.query(Slice).first()  # noqa: F841
-        db.session.query(Dashboard).first()  # noqa: F841
-        get_example_database()  # noqa: F841
+        db.session.query(Slice).first()
+        db.session.query(Dashboard).first()
+        get_example_database()
         report_schedule_data = {
             "type": ReportScheduleType.REPORT,
             "name": "name3",
@@ -982,8 +982,8 @@ class TestReportSchedulesApi(SupersetTestCase):
         """
         self.login(ADMIN_USERNAME)
         chart = db.session.query(Slice).first()
-        db.session.query(Dashboard).first()  # noqa: F841
-        get_example_database()  # noqa: F841
+        db.session.query(Dashboard).first()
+        get_example_database()
         report_schedule_data = {
             "type": ReportScheduleType.REPORT,
             "name": "name4",
@@ -1039,9 +1039,9 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test create multiple reports with the same creation method
         """
         self.login(ADMIN_USERNAME)
-        db.session.query(Slice).first()  # noqa: F841
+        db.session.query(Slice).first()
         dashboard = db.session.query(Dashboard).first()
-        get_example_database()  # noqa: F841
+        get_example_database()
         report_schedule_data = {
             "type": ReportScheduleType.REPORT,
             "name": "name4",
@@ -2159,7 +2159,7 @@ class TestReportSchedulesApi(SupersetTestCase):
             "description": "Updated description",
         }
         uri = f"api/v1/report/{existing_report.id}"
-        self.put_assert_metric(uri, report_schedule_data, "put")  # noqa: F841
+        self.put_assert_metric(uri, report_schedule_data, "put")
         updated_report = (
             db.session.query(ReportSchedule)
             .filter(ReportSchedule.name == "name1")
@@ -2182,7 +2182,7 @@ class TestReportSchedulesApi(SupersetTestCase):
             "owners": [],
         }
         uri = f"api/v1/report/{existing_report.id}"
-        self.put_assert_metric(uri, report_schedule_data, "put")  # noqa: F841
+        self.put_assert_metric(uri, report_schedule_data, "put")
         updated_report = (
             db.session.query(ReportSchedule)
             .filter(ReportSchedule.name == "name1")
@@ -2222,7 +2222,7 @@ class TestReportSchedulesApi(SupersetTestCase):
             "owners": [gamma.id],
         }
         uri = f"api/v1/report/{updated_report.id}"
-        self.put_assert_metric(uri, report_update_data, "put")  # noqa: F841
+        self.put_assert_metric(uri, report_update_data, "put")
         updated_report = (
             db.session.query(ReportSchedule)
             .filter(ReportSchedule.name == "name1")
@@ -2450,7 +2450,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         ReportSchedule Api: Test get report schedule 404s when feature is disabled
         """
         report_schedule = db.session.query(Dashboard).first()
-        get_example_database()  # noqa: F841
+        get_example_database()
         anchors = ["TAB-AsMaxdYL_t", "TAB-YT6eNksV-", "TAB-l_9I0aNYZ"]
         report_schedule_data = {
             "type": ReportScheduleType.REPORT,
@@ -2483,7 +2483,7 @@ class TestReportSchedulesApi(SupersetTestCase):
             .filter(Dashboard.slug == "multi_tabs_test")
             .first()
         )
-        get_example_database()  # noqa: F841
+        get_example_database()
 
         self.login(ADMIN_USERNAME)
         tabs_uri = f"/api/v1/dashboard/{report_dashboard.id}/tabs"

@@ -491,7 +491,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
             ]
         }
         uri = (
-            f"api/v1/annotation_layer/{layer.id}/annotation/?q={rison.dumps(arguments)}"  # noqa: E501
+            f"api/v1/annotation_layer/{layer.id}/annotation/?q={rison.dumps(arguments)}"
         )
         rv = self.get_assert_metric(uri, "get_list")
 
@@ -505,7 +505,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
             ]
         }
         uri = (
-            f"api/v1/annotation_layer/{layer.id}/annotation/?q={rison.dumps(arguments)}"  # noqa: E501
+            f"api/v1/annotation_layer/{layer.id}/annotation/?q={rison.dumps(arguments)}"
         )
         rv = self.get_assert_metric(uri, "get_list")
 

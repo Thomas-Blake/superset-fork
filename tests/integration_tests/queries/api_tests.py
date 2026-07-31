@@ -271,7 +271,7 @@ class TestQueryApi(SupersetTestCase):
         data = json.loads(rv.data.decode("utf-8"))
         assert data["count"] == QUERIES_FIXTURE_COUNT
         # check expected columns
-        assert sorted(list(data["result"][0].keys())) == [  # noqa: C414
+        assert sorted(data["result"][0].keys()) == [
             "changed_on",
             "database",
             "end_time",
@@ -289,7 +289,7 @@ class TestQueryApi(SupersetTestCase):
             "tracking_url",
             "user",
         ]
-        assert sorted(list(data["result"][0]["user"].keys())) == [  # noqa: C414
+        assert sorted(data["result"][0]["user"].keys()) == [
             "first_name",
             "id",
             "last_name",

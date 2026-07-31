@@ -20,7 +20,7 @@
 from unittest.mock import patch
 
 from superset import security_manager
-from superset.utils import json, slack  # noqa: F401
+from superset.utils import json
 from tests.conftest import with_config
 from tests.integration_tests.base_tests import SupersetTestCase
 from tests.integration_tests.conftest import with_feature_flags

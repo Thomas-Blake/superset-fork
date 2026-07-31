@@ -18,7 +18,6 @@ from unittest.mock import patch
 
 import pytest
 from flask_appbuilder.security.sqla.models import User
-from sqlalchemy.orm import Session  # noqa: F401
 
 from superset import db
 from superset.commands.explore.form_data.state import TemporaryExploreState
@@ -39,21 +38,21 @@ FORM_DATA = {"test": "test value"}
 
 @pytest.fixture
 def chart_id(load_world_bank_dashboard_with_slices) -> int:  # noqa: F811
-    with app.app_context():  # noqa: F841
+    with app.app_context():
         chart = db.session.query(Slice).filter_by(slice_name="World's Population").one()
         return chart.id
 
 
 @pytest.fixture
 def admin_id() -> int:
-    with app.app_context():  # noqa: F841
+    with app.app_context():
         admin = db.session.query(User).filter_by(username="admin").one()
         return admin.id
 
 
 @pytest.fixture
 def dataset() -> int:
-    with app.app_context():  # noqa: F841
+    with app.app_context():
         dataset = (
             db.session.query(SqlaTable)
             .filter_by(table_name="wb_health_population")
@@ -79,9 +78,9 @@ def assert_dataset(result, dataset_id):
     dataset = result["dataset"]
     assert dataset["id"] == dataset_id
     assert dataset["datasource_name"] == "wb_health_population"
-    assert dataset["is_sqllab_view"] is False  # noqa: E712
+    assert dataset["is_sqllab_view"] is False
     assert dataset["main_dttm_col"] == "year"
-    assert dataset["sql"] is None  # noqa: E711
+    assert dataset["sql"] is None
     assert dataset["type"] == "table"
     assert dataset["uid"] == f"{dataset_id}__table"
 
@@ -90,7 +89,7 @@ def assert_dataset(result, dataset_id):
 def assert_slice(result, chart_id, dataset_id):
     slice = result["slice"]
     assert slice["edit_url"] == f"/chart/edit/{chart_id}"
-    assert slice["is_managed_externally"] is False  # noqa: E712
+    assert slice["is_managed_externally"] is False
     assert slice["slice_id"] == chart_id
     assert slice["slice_name"] == "World's Population"
     assert slice["form_data"]["datasource"] == f"{dataset_id}__table"
@@ -98,14 +97,14 @@ def assert_slice(result, chart_id, dataset_id):
 
 
 def test_no_params_provided(test_client, login_as_admin):
-    resp = test_client.get("api/v1/explore/")  # noqa: F541
+    resp = test_client.get("api/v1/explore/")
     assert resp.status_code == 200
     data = json.loads(resp.data.decode("utf-8"))
     result = data.get("result")
     assert result["dataset"]["name"] == "[Missing Dataset]"
     assert result["form_data"]["datasource"] == "None__table"
-    assert result["message"] is None  # noqa: E711
-    assert result["slice"] is None  # noqa: E711
+    assert result["message"] is None
+    assert result["slice"] is None
 
 
 def test_get_from_cache(test_client, login_as_admin, dataset):
@@ -118,8 +117,8 @@ def test_get_from_cache(test_client, login_as_admin, dataset):
     assert_dataset(result, dataset.id)
     assert result["form_data"]["datasource"] == f"{dataset.id}__table"
     assert result["form_data"]["test"] == "test value"
-    assert result["message"] is None  # noqa: E711
-    assert result["slice"] is None  # noqa: E711
+    assert result["message"] is None
+    assert result["slice"] is None
 
 
 def test_get_from_cache_unknown_key_chart_id(
@@ -155,7 +154,7 @@ def test_get_from_cache_unknown_key_dataset(test_client, login_as_admin, dataset
         result["message"]
         == "Form data not found in cache, reverting to dataset metadata."
     )
-    assert result["slice"] is None  # noqa: E711
+    assert result["slice"] is None
 
 
 def test_get_from_cache_unknown_key_no_extra_parameters(test_client, login_as_admin):
@@ -166,8 +165,8 @@ def test_get_from_cache_unknown_key_no_extra_parameters(test_client, login_as_ad
     result = data.get("result")
     assert result["dataset"]["name"] == "[Missing Dataset]"
     assert result["form_data"]["datasource"] == "None__table"
-    assert result["message"] is None  # noqa: E711
-    assert result["slice"] is None  # noqa: E711
+    assert result["message"] is None
+    assert result["slice"] is None
 
 
 def test_get_from_permalink(test_client, login_as_admin, chart_id, dataset):
@@ -176,7 +175,7 @@ def test_get_from_permalink(test_client, login_as_admin, chart_id, dataset):
         "datasource": f"{dataset.id}__{dataset.type}",
         **FORM_DATA,
     }
-    resp = test_client.post("api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post("api/v1/explore/permalink", json={"formData": form_data})
     data = json.loads(resp.data.decode("utf-8"))
     permalink_key = data["key"]
     resp = test_client.get(f"api/v1/explore/?permalink_key={permalink_key}")
@@ -186,8 +185,8 @@ def test_get_from_permalink(test_client, login_as_admin, chart_id, dataset):
     assert_dataset(result, dataset.id)
     assert result["form_data"]["datasource"] == f"{dataset.id}__table"
     assert result["form_data"]["test"] == "test value"
-    assert result["message"] is None  # noqa: E711
-    assert result["slice"] is None  # noqa: E711
+    assert result["message"] is None
+    assert result["slice"] is None
 
 
 def test_get_from_permalink_unknown_key(test_client, login_as_admin):

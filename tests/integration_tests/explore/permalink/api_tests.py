@@ -19,7 +19,6 @@ from typing import Any
 from uuid import uuid3
 
 import pytest
-from sqlalchemy.orm import Session  # noqa: F401
 
 from superset import db
 from superset.explore.permalink.schemas import ExplorePermalinkSchema
@@ -70,7 +69,7 @@ def permalink_salt() -> Iterator[str]:
 def test_post(
     form_data: dict[str, Any], permalink_salt: str, test_client, login_as_admin
 ):
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post("api/v1/explore/permalink", json={"formData": form_data})
     assert resp.status_code == 201
     data = json.loads(resp.data.decode("utf-8"))
     key = data["key"]
@@ -83,7 +82,7 @@ def test_post(
 
 def test_post_access_denied(form_data, test_client, login_as):
     login_as("gamma")
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post("api/v1/explore/permalink", json={"formData": form_data})
     assert resp.status_code == 403
 
 
@@ -120,14 +119,14 @@ def test_get_missing_chart(
 
 
 def test_post_invalid_schema(test_client, login_as_admin) -> None:
-    resp = test_client.post(f"api/v1/explore/permalink", json={"abc": 123})  # noqa: F541
+    resp = test_client.post("api/v1/explore/permalink", json={"abc": 123})
     assert resp.status_code == 400
 
 
 def test_get(
     form_data: dict[str, Any], permalink_salt: str, test_client, login_as_admin
 ) -> None:
-    resp = test_client.post(f"api/v1/explore/permalink", json={"formData": form_data})  # noqa: F541
+    resp = test_client.post("api/v1/explore/permalink", json={"formData": form_data})
     data = json.loads(resp.data.decode("utf-8"))
     key = data["key"]
     resp = test_client.get(f"api/v1/explore/permalink/{key}")

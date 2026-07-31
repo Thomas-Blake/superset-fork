@@ -480,9 +480,9 @@ class TestSavedQueryApi(SupersetTestCase):
             assert data_by_id["count"] == data_by_name["count"], len(
                 expected_saved_queries
             )
-            assert set(query["id"] for query in data_by_id["result"]) == set(  # noqa: C401
+            assert {query["id"] for query in data_by_id["result"]} == {
                 query["id"] for query in data_by_name["result"]
-            ), set(query.id for query in expected_saved_queries)  # noqa: C401
+            }, {query.id for query in expected_saved_queries}
 
     @pytest.mark.usefixtures("create_saved_queries")
     def test_get_saved_query_favorite_filter(self):
@@ -673,7 +673,7 @@ class TestSavedQueryApi(SupersetTestCase):
         """
         Saved Query API: Test create
         """
-        self.get_user("admin")  # noqa: F841
+        self.get_user("admin")
         example_db = get_example_database()
 
         post_data = {

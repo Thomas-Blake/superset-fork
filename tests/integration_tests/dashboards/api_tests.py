@@ -30,7 +30,7 @@ import yaml
 
 from freezegun import freeze_time
 from sqlalchemy import and_
-from superset import db, security_manager  # noqa: F401
+from superset import db, security_manager
 from superset.models.dashboard import Dashboard
 from superset.models.core import FavStar, FavStarClassName
 from superset.reports.models import ReportSchedule, ReportScheduleType
@@ -166,7 +166,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
             dashboard = self.insert_dashboard(
                 "dashboard_report",
                 "dashboard_report",
-                [admin.id],  # noqa: F541
+                [admin.id],
             )
             report_schedule = ReportSchedule(
                 type=ReportScheduleType.REPORT,
@@ -919,9 +919,9 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
             assert data_by_id["count"] == data_by_name["count"], len(
                 expected_dashboards
             )
-            assert set(chart["id"] for chart in data_by_id["result"]) == set(  # noqa: C401
+            assert {chart["id"] for chart in data_by_id["result"]} == {
                 chart["id"] for chart in data_by_name["result"]
-            ), set(chart.id for chart in expected_dashboards)  # noqa: C401
+            }, {chart.id for chart in expected_dashboards}
 
     @pytest.mark.usefixtures("create_dashboards")
     def test_get_current_user_favorite_status(self):
@@ -1379,7 +1379,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         admin_id = self.get_user("admin").id
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1406,7 +1406,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         user = self.get_user("admin")
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1540,7 +1540,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         """
         gamma_id = self.get_user("gamma").id
         dashboard_count = 4
-        dashboard_ids = list()  # noqa: C408
+        dashboard_ids = []
         for dashboard_name_index in range(dashboard_count):
             dashboard_ids.append(
                 self.insert_dashboard(
@@ -1605,7 +1605,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         )
 
         dashboard_count = 4
-        dashboards = list()  # noqa: C408
+        dashboards = []
         for dashboard_name_index in range(dashboard_count):
             dashboards.append(
                 self.insert_dashboard(
@@ -2663,7 +2663,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
 
         rv = self.get_assert_metric(uri, "export")
 
-        headers = "attachment; filename=dashboard_export_20220101T000000.zip"  # noqa: F541
+        headers = "attachment; filename=dashboard_export_20220101T000000.zip"
         assert rv.status_code == 200
         assert rv.headers["Content-Disposition"] == headers
 
@@ -3011,7 +3011,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         API: Test get filter related roles
         """
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/dashboard/related/roles"  # noqa: F541
+        uri = "api/v1/dashboard/related/roles"
 
         rv = self.client.get(uri)
         assert rv.status_code == 200
@@ -3053,7 +3053,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
             "flask.current_app.config",
             {"EXTRA_RELATED_QUERY_FILTERS": {"role": _base_filter}},
         ):
-            uri = "api/v1/dashboard/related/roles"  # noqa: F541
+            uri = "api/v1/dashboard/related/roles"
             rv = self.client.get(uri)
             assert rv.status_code == 200
             response = json.loads(rv.data.decode("utf-8"))
@@ -3141,7 +3141,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         assert data["count"] == len(expected_models)
 
     def test_gets_not_created_by_user_dashboards_filter(self):
-        dashboard = self.insert_dashboard("title", "slug", [])  # noqa: F541
+        dashboard = self.insert_dashboard("title", "slug", [])
         expected_models = (
             db.session.query(Dashboard).filter(Dashboard.created_by_fk.is_(None)).all()
         )
@@ -3199,7 +3199,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         assert dash.dashboard_title == "copied dash"
         assert dash.css == "<css>"
         assert dash.owners == [security_manager.find_user("admin")]
-        self.assertCountEqual(dash.slices, original_dash.slices)  # noqa: PT009
+        assert {s.id for s in dash.slices} == {s.id for s in original_dash.slices}
         assert dash.params_dict["color_namespace"] == "Color Namespace Test"
         assert dash.params_dict["color_scheme"] == "Color Scheme Test"
 

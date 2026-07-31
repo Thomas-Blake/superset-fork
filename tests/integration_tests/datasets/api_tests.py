@@ -42,7 +42,7 @@ from superset.utils.core import backend, get_example_default_schema
 from superset.utils.database import get_example_database, get_main_database
 from superset.utils.dict_import_export import export_to_dict
 from tests.integration_tests.base_tests import SupersetTestCase
-from tests.integration_tests.conftest import (  # noqa: F401
+from tests.integration_tests.conftest import (
     CTAS_SCHEMA_NAME,
     with_feature_flags,
 )
@@ -93,7 +93,7 @@ class TestDatasetApi(SupersetTestCase):
         metrics: list[SqlMetric] | None = None,
         extra: str | None = None,
     ) -> SqlaTable:
-        obj_owners = list()  # noqa: C408
+        obj_owners = []
         for owner in owners:
             user = db.session.query(security_manager.user_model).get(owner)
             obj_owners.append(user)
@@ -1158,7 +1158,7 @@ class TestDatasetApi(SupersetTestCase):
         """
 
         # Add default dataset
-        get_main_database()  # noqa: F841
+        get_main_database()
         dataset = self.insert_default_dataset()
         prev_col_len = len(dataset.columns)
 
@@ -2019,7 +2019,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}/column/{column_id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        assert db.session.query(TableColumn).get(column_id) is None  # noqa: E711
+        assert db.session.query(TableColumn).get(column_id) is None
 
     @pytest.mark.usefixtures("create_datasets")
     def test_delete_dataset_column_not_found(self):
@@ -2091,7 +2091,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}/metric/{test_metric.id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        assert db.session.query(SqlMetric).get(test_metric.id) is None  # noqa: E711
+        assert db.session.query(SqlMetric).get(test_metric.id) is None
 
     @pytest.mark.usefixtures("create_datasets")
     def test_delete_dataset_metric_not_found(self):
@@ -2831,7 +2831,7 @@ class TestDatasetApi(SupersetTestCase):
         dataset = self.get_fixture_virtual_datasets()[0]
 
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/dataset/duplicate"  # noqa: F541
+        uri = "api/v1/dataset/duplicate"
         table_data = {"base_model_id": dataset.id, "table_name": "Dupe1"}
         rv = self.post_assert_metric(uri, table_data, "duplicate")
         assert rv.status_code == 201
@@ -2856,7 +2856,7 @@ class TestDatasetApi(SupersetTestCase):
         dataset = self.get_fixture_datasets()[0]
 
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/dataset/duplicate"  # noqa: F541
+        uri = "api/v1/dataset/duplicate"
         table_data = {"base_model_id": dataset.id, "table_name": "Dupe2"}
         rv = self.post_assert_metric(uri, table_data, "duplicate")
         assert rv.status_code == 422
@@ -2870,7 +2870,7 @@ class TestDatasetApi(SupersetTestCase):
         dataset = self.get_fixture_virtual_datasets()[0]
 
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/dataset/duplicate"  # noqa: F541
+        uri = "api/v1/dataset/duplicate"
         table_data = {
             "base_model_id": dataset.id,
             "table_name": "sql_virtual_dataset_2",
@@ -2884,7 +2884,7 @@ class TestDatasetApi(SupersetTestCase):
         """
 
         self.login(ADMIN_USERNAME)
-        uri = "api/v1/dataset/duplicate"  # noqa: F541
+        uri = "api/v1/dataset/duplicate"
         table_data = {
             "base_model_id": -1,
             "table_name": "Dupe3",
