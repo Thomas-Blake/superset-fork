@@ -221,7 +221,7 @@ class Dashboard(CoreDashboard, AuditMixinNullable, ImportExportMixin):
     @renders("dashboard_title")
     def dashboard_link(self) -> Markup:
         title = escape(self.dashboard_title or "<empty>")
-        return Markup(f'<a href="{self.url}">{title}</a>')
+        return Markup('<a href="{}">{}</a>').format(escape(self.url), title)
 
     @property
     def digest(self) -> str | None:

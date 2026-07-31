@@ -610,7 +610,7 @@ class AuditMixinNullable(AuditMixin):
 
     @renders("changed_on")
     def changed_on_(self) -> Markup:
-        return Markup(f'<span class="no-wrap">{self.changed_on}</span>')
+        return Markup('<span class="no-wrap">{}</span>').format(escape(self.changed_on))
 
     @renders("changed_on")
     def changed_on_delta_humanized(self) -> str:
@@ -654,7 +654,9 @@ class AuditMixinNullable(AuditMixin):
 
     @renders("changed_on")
     def modified(self) -> Markup:
-        return Markup(f'<span class="no-wrap">{self.changed_on_humanized}</span>')
+        return Markup('<span class="no-wrap">{}</span>').format(
+            escape(self.changed_on_humanized)
+        )
 
 
 class QueryResult:  # pylint: disable=too-few-public-methods
