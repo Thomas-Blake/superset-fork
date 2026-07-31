@@ -16,6 +16,7 @@
 # under the License.
 from __future__ import annotations
 
+import io
 import json
 import pickle
 from abc import ABC, abstractmethod
@@ -77,12 +78,47 @@ class JsonKeyValueCodec(KeyValueCodec):
             raise KeyValueCodecDecodeException(str(ex)) from ex
 
 
+class _RestrictedUnpickler(pickle.Unpickler):
+    """
+    Restricted ``pickle.Unpickler`` that only allows reconstructing a known-safe
+    set of classes.
+
+    The default :func:`pickle.loads` is unsafe to use on untrusted input because
+    it can construct arbitrary objects and invoke arbitrary callables, which is
+    a well-known remote code execution vector. By overriding ``find_class`` we
+    constrain the classes that can be referenced by a pickle stream to a small
+    allow-list of immutable / container types from the standard library.
+
+    Primitive built-in types (``int``, ``float``, ``str``, ``bytes``, ``bool``,
+    ``None``, ``list``, ``dict``, ``tuple``) are reconstructed via dedicated
+    pickle opcodes and never go through ``find_class``, so they remain
+    supported without being listed here.
+    """
+
+    _SAFE_CLASSES: dict[str, frozenset[str]] = {
+        "builtins": frozenset({"complex", "frozenset", "set"}),
+        "collections": frozenset({"OrderedDict", "defaultdict"}),
+        "datetime": frozenset({"date", "datetime", "time", "timedelta", "timezone"}),
+        "uuid": frozenset({"UUID"}),
+    }
+
+    def find_class(self, module: str, name: str) -> Any:
+        if name in self._SAFE_CLASSES.get(module, frozenset()):
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError(
+            f"Refusing to unpickle disallowed global '{module}.{name}'"
+        )
+
+
 class PickleKeyValueCodec(KeyValueCodec):
     def encode(self, value: dict[Any, Any]) -> bytes:
         return pickle.dumps(value)
 
     def decode(self, value: bytes) -> dict[Any, Any]:
-        return pickle.loads(value)  # noqa: S301
+        try:
+            return _RestrictedUnpickler(io.BytesIO(value)).load()
+        except (pickle.UnpicklingError, AttributeError, EOFError, ImportError) as ex:
+            raise KeyValueCodecDecodeException(str(ex)) from ex
 
 
 class MarshmallowKeyValueCodec(JsonKeyValueCodec):
